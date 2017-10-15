@@ -26,6 +26,13 @@ export const textProperty = new Property<CheckBox, string>({
   valueChanged: onTextPropertyChanged
 });
 
+export const scaleProperty = new Property<CheckBox, number>({
+  name: "scale",
+  defaultValue: 1,
+  valueConverter: v => parseFloat(v),
+  valueChanged: onScalePropertyChanged
+});
+
 export const fillColorProperty = new CssProperty<Style, string>({
   name: "fillColor",
   cssName: "fill-color",
@@ -52,7 +59,6 @@ export class CheckBox extends View implements CheckBoxInterface {
   private _checkPaddingTop: string;
   private _checkPaddingRight: string;
   private _checkPaddingBottom: string;
-  private _scale: string;
   public checked: boolean;
   constructor() {
     super();
@@ -118,14 +124,6 @@ export class CheckBox extends View implements CheckBoxInterface {
     return this._checkPaddingBottom;
   }
 
-  get scale() {
-    return this._scale;
-  }
-
-  set scale(scale) {
-    this._scale = scale;
-  }
-
   [checkedProperty.getDefault](): boolean {
     return false;
   }
@@ -137,6 +135,13 @@ export class CheckBox extends View implements CheckBoxInterface {
   }
   [textProperty.setNative](value: string) {
     this.nativeView.setText(java.lang.String.valueOf(value));
+  }
+  [scaleProperty.getDefault](): number {
+    return 1;
+  }
+  [scaleProperty.setNative](scale: number) {
+    this.nativeView.setScaleX(scale);
+    this.nativeView.setScaleY(scale);
   }
 
   get fillColor(): string {
@@ -301,11 +306,6 @@ export class CheckBox extends View implements CheckBoxInterface {
       }
     }
 
-    if (this.scale) {
-      this._android.setScaleX(parseFloat(this.scale));
-      this._android.setScaleY(parseFloat(this.scale));
-    }
-
     return this._android;
   }
 
@@ -346,6 +346,12 @@ export class CheckBox extends View implements CheckBoxInterface {
     }
     textProperty.nativeValueChange(this, newValue);
   }
+  _onScalePropertyChanged(checkbox: CheckBox, oldValue, newValue) {
+    if (!this.nativeView) {
+      return;
+    }
+    scaleProperty.nativeValueChange(this, newValue);
+  }
 }
 
 function onCheckedPropertyChanged(checkbox: CheckBox, oldValue, newValue) {
@@ -354,8 +360,12 @@ function onCheckedPropertyChanged(checkbox: CheckBox, oldValue, newValue) {
 function onTextPropertyChanged(checkbox: CheckBox, oldValue, newValue) {
   checkbox._onTextPropertyChanged(checkbox, oldValue, newValue);
 }
+function onScalePropertyChanged(checkbox: CheckBox, oldValue, newValue) {
+  checkbox._onScalePropertyChanged(checkbox, oldValue, newValue);
+}
 
 checkedProperty.register(CheckBox);
 textProperty.register(CheckBox);
+scaleProperty.register(CheckBox);
 fillColorProperty.register(Style);
 tintColorProperty.register(Style);

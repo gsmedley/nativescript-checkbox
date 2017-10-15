@@ -48,7 +48,7 @@ module.exports = function (grunt) {
                 cmd: "node ./node_modules/typescript/bin/tsc --project tsconfig.json --outDir " + localConfig.outDir
             },
             ngCompile: {
-                cmd: "node ./node_modules/.bin/ngc --project tsconfig.aot.json --outDir " + localConfig.outDir
+                cmd:  "node ./node_modules/@angular/compiler-cli/src/main.js --project tsconfig.aot.json --outDir " + localConfig.outDir  
             },
             npm_publish: {
                 cmd: "npm publish",
