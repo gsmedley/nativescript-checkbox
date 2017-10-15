@@ -9,7 +9,7 @@
     }
   },
   "dependencies": {
-    "nativescript-checkbox": "file:..",
+    "nativescript-checkbox": "file:///D:\\Projects\\nativescript-checkbox",
     "tns-core-modules": "^3.0.0"
   },
   "devDependencies": {
