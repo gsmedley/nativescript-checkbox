@@ -52,6 +52,7 @@ export class CheckBox extends View implements CheckBoxInterface {
   private _checkPaddingTop: string;
   private _checkPaddingRight: string;
   private _checkPaddingBottom: string;
+  private _scale: string;
   public checked: boolean;
   constructor() {
     super();
@@ -116,6 +117,15 @@ export class CheckBox extends View implements CheckBoxInterface {
   get checkPaddingBottom() {
     return this._checkPaddingBottom;
   }
+
+  get scale() {
+    return this._scale;
+  }
+
+  set scale(scale) {
+    this._scale = scale;
+  }
+
   [checkedProperty.getDefault](): boolean {
     return false;
   }
@@ -134,11 +144,7 @@ export class CheckBox extends View implements CheckBoxInterface {
   }
   set fillColor(color: string) {
     (<any>this.style).fillColor = color;
-    if (this._android && device.sdkVersion >= "21") {
-      this._android.setButtonTintList(
-        android.content.res.ColorStateList.valueOf(new Color(color).android)
-      );
-    }
+    this.updateFillColor(color);
   }
 
   // there is no difference between tint and fill on the android widget
@@ -148,6 +154,39 @@ export class CheckBox extends View implements CheckBoxInterface {
 
   set tintColor(color: string) {
     (<any>this.style).fillColor = color;
+  }
+
+  private updateFillColor(color: string) {
+    if (this._android) {
+      let colorDef = new Color(color).android;
+      if (device.sdkVersion == "21") {
+        this._android.setButtonTintList(
+          android.content.res.ColorStateList.valueOf(colorDef)
+        );
+      } else if (device.sdkVersion > "21") {
+        let stateArray = (Array as any).create("[I", 2);
+        stateArray[0] = (Array as any).create("int", 1);
+        stateArray[1] = (Array as any).create("int", 1);
+        stateArray[0][0] = -android.R.attr.state_checked;
+        stateArray[1][0] = android.R.attr.state_checked;
+        let colorArray = (Array as any).create("int", 2);
+        colorArray[0] = android.graphics.Color.GRAY;
+        colorArray[1] = colorDef;
+
+        //var cc = [android.graphics.Color.BLUE, android.graphics.Color.RED]
+
+        let colorStateList = new android.content.res.ColorStateList(
+          stateArray,
+          colorArray
+        );
+        this._android.setButtonTintList(colorStateList);
+      } else {
+        android.support.v4.widget.CompoundButtonCompat.setButtonTintList(
+          this._android,
+          android.content.res.ColorStateList.valueOf(colorDef)
+        );
+      }
+    }
   }
 
   public createNativeView() {
@@ -258,13 +297,13 @@ export class CheckBox extends View implements CheckBoxInterface {
 
     if (this._android) {
       if (this.fillColor) {
-        android.support.v4.widget.CompoundButtonCompat.setButtonTintList(
-          this._android,
-          android.content.res.ColorStateList.valueOf(
-            new Color(this.fillColor).android
-          )
-        );
+        this.updateFillColor(this.fillColor);
       }
+    }
+
+    if (this.scale) {
+      this._android.setScaleX(parseFloat(this.scale));
+      this._android.setScaleY(parseFloat(this.scale));
     }
 
     return this._android;

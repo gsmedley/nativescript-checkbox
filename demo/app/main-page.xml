@@ -9,6 +9,7 @@
                     <ScrollView>
                         <StackLayout id="wrapper">
                             <CheckBox:CheckBox boxType="circle" id="fontSizeTest" fillColor="#fff000" onCheckColor="green" text="Font Size Circle Test" tint="red" tintColor="red" checked="false" class="fontBig" />
+                            <CheckBox:CheckBox boxType="circle" id="scaleTest" scale="1.4" onCheckColor="green" text="Scale Circle Test" tint="red" tintColor="red" checked="false"  style="margin-left:50"/>
                             <Label text="Functions" class="title" />
                             <StackLayout class="listitem">
                                 <GridLayout columns="*, auto" class="demosection">
